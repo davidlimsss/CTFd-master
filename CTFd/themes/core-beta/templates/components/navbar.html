@@ -1,0 +1,421 @@
+<!-- <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+  <div class="container">
+    <a href="{{ url_for('views.static_html', route='/') }}" class="navbar-brand">
+      {% if Configs.ctf_logo %}
+        <img
+            class="img-responsive ctf_logo"
+            src="{{ url_for('views.files', path=Configs.ctf_logo) }}"
+            alt="{{ Configs.ctf_name }}"
+            height="25"
+        >
+      {% else %}
+        {{ Configs.ctf_name }}
+      {% endif %}
+    </a>
+
+    <button
+        class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#base-navbars"
+        aria-controls="base-navbars" aria-expanded="false" aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="base-navbars">
+      <ul class="navbar-nav me-auto">
+        {% for page in Plugins.user_menu_pages %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ page.route }}">{{ page.title }}</a>
+          </li>
+        {% endfor %}
+
+        {% if Configs.account_visibility != 'admins' %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('users.listing') }}">
+              {% trans %}Users{% endtrans %}
+            </a>
+          </li>
+
+          {% if Configs.user_mode == 'teams' %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('teams.listing') }}">
+                {% trans %}Teams{% endtrans %}
+              </a>
+            </li>
+          {% endif %}
+        {% endif %}
+
+        {% if Configs.account_visibility != 'admins' and Configs.score_visibility != 'admins' %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('scoreboard.listing') }}">
+              {% trans %}Scoreboard{% endtrans %}
+            </a>
+          </li>
+        {% endif %}
+
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('challenges.listing') }}">
+            {% trans %}Challenges{% endtrans %}
+          </a>
+        </li>
+      </ul>
+
+      <hr class="d-sm-flex d-md-flex d-lg-none">
+
+      <ul class="navbar-nav ms-md-auto d-block d-sm-flex d-md-flex">
+        {% if authed() %}
+
+          {% if is_admin() %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('admin.view') }}">
+                <span
+                    class="d-block"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="bottom"
+                    title="Admin Panel"
+                >
+                    <i class="fas fa-wrench d-none d-md-block d-lg-none"></i>
+                </span>
+                <span class="d-sm-block d-md-none d-lg-block">
+                  <i class="fas fa-wrench pe-1"></i>
+                  {% trans %}Admin Panel{% endtrans %}
+                </span>
+              </a>
+            </li>
+          {% endif %}
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('views.notifications') }}">
+              <span
+                  class="d-block" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                  title="Notifications"
+              >
+                <i class="fas fa-bell d-none d-md-block d-lg-none"></i>
+              </span>
+              <span class="d-sm-block d-md-none d-lg-block">
+                  <i class="fas fa-bell pe-1"></i>
+                  <span x-data x-show="$store.unread_count > 0" x-text="$store.unread_count" class="badge rounded-pill bg-danger badge-notification"></span>
+                  {% trans %}Notifications{% endtrans %}
+              </span>
+            </a>
+          </li>
+
+          {% if Configs.user_mode == "teams" %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('teams.private') }}">
+                <span class="d-block" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Team">
+                  <i class="fas fa-users d-none d-md-block d-lg-none"></i>
+                </span>
+                <span class="d-sm-block d-md-none d-lg-block">
+                  <i class="fas fa-users pe-1"></i>
+                  {% trans %}Team{% endtrans %}
+                </span>
+              </a>
+            </li>
+          {% endif %}
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('users.private') }}">
+              <span class="d-block" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Profile">
+                <i class="fas fa-user-circle d-none d-md-block d-lg-none"></i>
+              </span>
+              <span class="d-sm-block d-md-none d-lg-block">
+                <i class="fas fa-user-circle pe-1"></i>
+                {% trans %}Profile{% endtrans %}
+              </span>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('views.settings') }}">
+              <span class="d-block" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Settings">
+                <i class="fas fa-cogs d-none d-md-block d-lg-none"></i>
+              </span>
+              <span class="d-sm-block d-md-none d-lg-block">
+                <i class="fas fa-cogs pe-1"></i>
+                {% trans %}Settings{% endtrans %}
+              </span>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.logout') }}">
+              <span class="d-block" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Logout">
+                <i class="fas fa-sign-out-alt d-none d-md-block d-lg-none"></i>
+              </span>
+              <span class="d-sm-block d-md-none d-lg-block">
+                <i class="fas fa-sign-out-alt pe-1"></i><span class="d-lg-none">
+                  {% trans %}Logout{% endtrans %}
+                </span>
+              </span>
+            </a>
+          </li>
+        {% else %}
+
+          {% if registration_visible() %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('auth.register') }}">
+                <span
+                    class="d-block" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                    title="Register"
+                >
+                  <i class="fas fa-user-plus d-none d-md-block d-lg-none"></i>
+                </span>
+                <span class="d-sm-block d-md-none d-lg-block">
+                  <i class="fas fa-user-plus pe-1"></i>
+                  {% trans %}Register{% endtrans %}
+                </span>
+              </a>
+            </li>
+          {% endif %}
+
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('auth.login') }}">
+              <span class="d-block" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Login">
+                <i class="fas fa-sign-in-alt d-none d-md-block d-lg-none"></i>
+              </span>
+              <span class="d-sm-block d-md-none d-lg-block">
+                <i class="fas fa-sign-in-alt pe-1"></i>
+                {% trans %}Login{% endtrans %}
+              </span>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav> -->
+
+<img src="../../assets/img/wreckit5.png" alt="" srcset="">
+<aside id="sidebar">
+  <img src="../../assets/img/wreckit5.png" alt="">
+  <div class="d-flex">
+      <button class="toggle-btn" type="button">
+          <img src="../../assets/img/wreckit5.png" alt="">
+      </button>
+      <div class="sidebar-logo">
+          <a href="#">Wreck IT 5.0</a>
+      </div>
+  </div>
+  <!-- <a href="{{ url_for('views.static_html', route='/') }}" class="navbar-brand">
+    {% if Configs.ctf_logo %}
+        <img class="img-responsive ctf_logo" src="{{ url_for('views.files', path=Configs.ctf_logo) }}" height="25" alt="{{ Configs.ctf_name }}">
+    {% else %}
+        {{ Configs.ctf_name }}
+    {% endif %}
+  </a> -->
+  
+  <ul class="sidebar-nav">
+      <!-- {% for page in Plugins.user_menu_pages %}
+      <li class="nav-item">
+        <a href="{{ page.route }}" class="sidebar-link">
+          <i class="lni lni-users"></i>
+          <span>{{ page.title }}</span>
+        </a>
+        <a class="nav-link" href="{{ page.route }}">{{ page.title }}</a>
+      </li>
+      
+      {% endfor %} -->
+      {% if authed() %}
+
+      {% else %}
+      <li class="sidebar-item">
+        <a href="{{ url_for('views.static_html', route='/') }}" class="sidebar-link">
+          {% if Configs.ctf_logo %}
+          <i class="lni lni-home"></i>
+          <span>{% trans %}Home{% endtrans %}</span>
+          {% else %}
+              {{ Configs.ctf_name }}
+          {% endif %}
+        </a>
+      </li>
+      {% endif %}
+
+      {% if Configs.account_visibility != 'admins' %}
+      <li class="sidebar-item">
+          <a href="{{ url_for('users.listing') }}" class="sidebar-link">
+              <i class="lni lni-users"></i>
+              <span>{% trans %}Users{% endtrans %}</span>
+          </a>
+      </li>
+        {% if Configs.user_mode == 'teams' %}
+        <li class="sidebar-item">
+            <a href="{{ url_for('teams.listing') }}" class="sidebar-link">
+                <i class="lni lni-microsoft-teams"></i>
+                <span>{% trans %}Teams{% endtrans %}</span>
+            </a>
+        </li>
+        {% endif %}
+      {% endif %}
+      {% if authed() %}
+
+      {% else %}
+      <li class="sidebar-item">
+          <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+              data-bs-target="#auth" aria-expanded="false" aria-controls="auth">
+              <i class="lni lni-protection"></i>
+              <span>Auth</span>
+          </a>
+          <ul id="auth" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+              <li class="sidebar-item">
+                  <a href="{{ url_for('auth.login') }}" class="sidebar-link">{% trans %}Login{% endtrans %}</a>
+              </li>
+              {% if registration_visible() %}
+              <li class="sidebar-item">
+                  <a href="{{ url_for('auth.register') }}" class="sidebar-link">{% trans %}Register{% endtrans %}</a>
+              </li>
+              {% endif %}
+          </ul>
+      </li>x
+      {% endif %}
+      <!-- <li class="sidebar-item">
+          <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
+              data-bs-target="#multi" aria-expanded="false" aria-controls="multi">
+              <i class="lni lni-layout"></i>
+              <span>Multi Level</span>
+          </a>
+          <ul id="multi" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
+              <li class="sidebar-item">
+                  <a href="#" class="sidebar-link collapsed" data-bs-toggle="collapse"
+                      data-bs-target="#multi-two" aria-expanded="false" aria-controls="multi-two">
+                      Two Links
+                  </a>
+                  <ul id="multi-two" class="sidebar-dropdown list-unstyled collapse">
+                      <li class="sidebar-item">
+                          <a href="#" class="sidebar-link">Link 1</a>
+                      </li>
+                      <li class="sidebar-item">
+                          <a href="#" class="sidebar-link">Link 2</a>
+                      </li>
+                  </ul>
+              </li>
+          </ul>
+      </li> -->
+      {% if Configs.account_visibility != 'admins' and Configs.score_visibility != 'admins' %}
+      <li class="sidebar-item">
+          <a href="{{ url_for('scoreboard.listing') }}" class="sidebar-link">
+              <i class="lni lni-cup"></i>
+              <span>{% trans %}Scoreboard{% endtrans %}</span>
+          </a>
+      </li>
+      {% endif %}
+      <li class="sidebar-item">
+          <a href="{{ url_for('challenges.listing') }}" class="sidebar-link">
+              <i class="lni lni-diamond-alt"></i>
+              <span>{% trans %}Challenges{% endtrans %}</span>
+          </a>
+      </li>
+  </ul>
+  <ul class="sidebar-nav">
+    {% if authed() %}
+
+      {% if is_admin() %}
+        
+        <li class="sidebar-item">
+          <a href="{{ url_for('admin.view') }}" class="sidebar-link">
+              <i class="bi bi-tools"></i>
+              <span>{% trans %}Admin Panel{% endtrans %}</span>
+          </a>
+        </li>
+      {% endif %}
+
+      
+      <li class="sidebar-item">
+        <a href="{{ url_for('views.notifications') }}" class="sidebar-link">
+            <i class="bi bi-bell-fill"></i>
+            <span>{% trans %}Notifications{% endtrans %}</span>
+        </a>
+      </li>
+
+      {% if Configs.user_mode == "teams" %}
+        <li class="sidebar-item">
+          <a href="{{ url_for('teams.private') }}" class="sidebar-link">
+              <i class="fas fa-users pe-1"></i>
+              <span>{% trans %}Team{% endtrans %}</span>
+          </a>
+        </li>
+      {% endif %}
+
+      
+      <li class="sidebar-item">
+        <a href="{{ url_for('users.private') }}" class="sidebar-link">
+            <i class="bi bi-person-circle"></i>
+            <span>{% trans %}Profile{% endtrans %}</span>
+        </a>
+      </li>
+
+      
+      <li class="sidebar-item">
+        <a href="{{ url_for('views.settings') }}" class="sidebar-link">
+            <i class="bi bi-gear-wide"></i>
+            <span>{% trans %}Settings{% endtrans %}</span>
+        </a>
+      </li>
+
+      <!-- <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('auth.logout') }}">
+          <span class="d-block" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Logout">
+            <i class="fas fa-sign-out-alt d-none d-md-block d-lg-none"></i>
+          </span>
+          <span class="d-sm-block d-md-none d-lg-block">
+            <i class="fas fa-sign-out-alt pe-1"></i><span class="d-lg-none">
+              {% trans %}Logout{% endtrans %}
+            </span>
+          </span>
+        </a>
+      </li> -->
+      <li class="sidebar-item">
+        <a href="{{ url_for('auth.logout') }}" class="sidebar-link">
+            <i class="fas fa-sign-out-alt pe-1"></i>
+            <span>{% trans %}Logout{% endtrans %}</span>
+        </a>
+      </li>
+    {% else %}
+
+      <!-- {% if registration_visible() %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('auth.register') }}">
+            <span
+                class="d-block" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                title="Register"
+            >
+              <i class="fas fa-user-plus d-none d-md-block d-lg-none"></i>
+            </span>
+            <span class="d-sm-block d-md-none d-lg-block">
+              <i class="lni ini-enter"></i>
+                
+              <div class="sidebar-link">
+                <i class="sidebar-item"></i>
+                <a href="{{ url_for('auth.register') }}" class="sidebar-link">
+                  <i class="lni lni-enter"></i>
+                  <span>{% trans %}Register{% endtrans %}</span>
+                </a>
+              </div>
+            </span>
+          </a>
+        </li>
+      {% endif %}
+
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('auth.login') }}">
+          <span class="d-block" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Login">
+            <i class="fas fa-sign-in-alt d-none d-md-block d-lg-none"></i>
+          </span>
+          <span class="d-sm-block d-md-none d-lg-block">
+            <i class="sidebar-item"></i>
+            <a href="{{ url_for('auth.login') }}" class="sidebar-link">
+              <i class="lni lni-enter"></i>
+              <span>{% trans %}Login{% endtrans %}</span>
+            </a>
+            
+          </span>
+        </a>
+      </li> -->
+    {% endif %}
+  </ul>
+  <!-- <div class="sidebar-footer">
+      <a href="#" class="sidebar-link">
+          <i class="lni lni-exit"></i>
+          <span>Logout</span>
+      </a>
+  </div> -->
+</aside>
